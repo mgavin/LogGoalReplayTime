@@ -92,30 +92,33 @@ void LogGoalReplayTime::RenderSettings() {
         ImGui::TextUnformatted(
                 std::vformat("Last Game Number: {}", std::make_format_args(stats_data.game_num)).c_str());
         ImGui::TextUnformatted(std::vformat("Last Game GUID: {}", std::make_format_args(stats_data.game_guid)).c_str());
+
+        ImGui::TextUnformatted("Time (in milliseconds) spent after goal scored:");
         ImGui::TextUnformatted(
-                std::vformat(
-                        "Time (in milliseconds) spent after goal scored: Min: {:6d} | Average: {:6d} | Max: {:6d}",
-                        std::make_format_args(
-                                stats_data.min_post_goal,
-                                stats_data.milliseconds_spent_post_goal,
-                                stats_data.max_post_goal))
+                std::vformat("    Min: {:6d} ", std::make_format_args(stats_data.min_post_goal)).c_str());
+        ImGui::TextUnformatted(
+                std::vformat("    Average: {:6d} ", std::make_format_args(stats_data.milliseconds_spent_post_goal))
+                        .c_str());
+
+        ImGui::TextUnformatted(
+                std::vformat("    Max: {:6d} ", std::make_format_args(stats_data.max_post_goal)).c_str());
+        ImGui::TextUnformatted("Time (in milliseconds) spent in goal replay:");
+        ImGui::TextUnformatted(
+                std::vformat("    Min: {:6d} ", std::make_format_args(stats_data.min_goal_replay)).c_str());
+        ImGui::TextUnformatted(
+                std::vformat("    Average: {:6d} ", std::make_format_args(stats_data.milliseconds_spent_goal_replay))
+                        .c_str());
+
+        ImGui::TextUnformatted(
+                std::vformat("    Max: {:6d} ", std::make_format_args(stats_data.max_goal_replay)).c_str());
+        ImGui::TextUnformatted("Time (in milliseconds) spent in countdown:");
+        ImGui::TextUnformatted(
+                std::vformat("    Min: {:6d} ", std::make_format_args(stats_data.min_countdown)).c_str());
+        ImGui::TextUnformatted(
+                std::vformat("    Average: {:6d} ", std::make_format_args(stats_data.milliseconds_spent_countdown))
                         .c_str());
         ImGui::TextUnformatted(
-                std::vformat(
-                        "Time (in milliseconds) spent after goal replay: Min: {:6d} | Average: {:6d} | Max: {:6d}",
-                        std::make_format_args(
-                                stats_data.min_goal_replay,
-                                stats_data.milliseconds_spent_goal_replay,
-                                stats_data.max_goal_replay))
-                        .c_str());
-        ImGui::TextUnformatted(
-                std::vformat(
-                        "Time (in milliseconds) spent after goal countdown: Min: {:6d} | Average: {:6d} | Max: {:6d}",
-                        std::make_format_args(
-                                stats_data.min_countdown,
-                                stats_data.milliseconds_spent_countdown,
-                                stats_data.max_countdown))
-                        .c_str());
+                std::vformat("    Max: {:6d} ", std::make_format_args(stats_data.max_countdown)).c_str());
 }
 
 /// <summary>

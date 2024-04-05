@@ -30,39 +30,6 @@
     <ClCompile Include="$(RootNamespace).cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_additions.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_demo.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_draw.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_impl_dx11.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_impl_win32.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_rangeslider.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_searchablecombo.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_timeline.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_widgets.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imguivariouscontrols.cpp">
-      <Filter>IMGUI</Filter>
-    </ClCompile>
     <ClCompile Include="..\csv-parser\include\internal\basic_csv_parser.cpp">
       <Filter>CSV</Filter>
     </ClCompile>
@@ -90,6 +57,39 @@
     <ClCompile Include="..\csv-parser\include\internal\csv_utility.cpp">
       <Filter>CSV</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_additions.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_demo.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_draw.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_impl_dx11.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_impl_win32.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_rangeslider.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_searchablecombo.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_timeline.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_widgets.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imguivariouscontrols.cpp">
+      <Filter>IMGUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(RootNamespace).h">
@@ -100,45 +100,6 @@
     </ClInclude>
     <ClInclude Include="HookedEvents.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imconfig.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_additions.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_impl_dx11.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_impl_win32.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_internal.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_rangeslider.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_searchablecombo.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imgui_timeline.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imguivariouscontrols.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imstb_rectpack.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imstb_textedit.h">
-      <Filter>IMGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(BakkesModPath)\bakkesmodsdk\include\bakkesmod\imgui\imstb_truetype.h">
-      <Filter>IMGUI</Filter>
     </ClInclude>
     <ClInclude Include="..\csv-parser\include\csv.hpp">
       <Filter>Header Files</Filter>
@@ -172,6 +133,45 @@
     </ClInclude>
     <ClInclude Include="..\csv-parser\include\internal\data_type.h">
       <Filter>CSV</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imconfig.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_additions.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_impl_dx11.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_impl_win32.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_internal.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_rangeslider.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_searchablecombo.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imgui_timeline.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imguivariouscontrols.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imstb_rectpack.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imstb_textedit.h">
+      <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imstb_truetype.h">
+      <Filter>IMGUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
