@@ -63,7 +63,9 @@ void LogGoalReplayTime::onLoad() {
                 true);
 
         memset(&current_data, 0, sizeof(data));
-        current_data.game_guid = "";
+        current_data.game_guid       = "";
+        current_data.did_player_skip = false;  // should be cleared out... but. uhhh extra handling for the numbers :/
+        current_data.did_team_skip   = false;
         memset(&stats_data, 0, sizeof(data));
         stats_data.game_guid = "";
         generate_stats();
@@ -77,6 +79,29 @@ void LogGoalReplayTime::onUnload() {
         // dont throw here
 }
 
+void LogGoalReplayTime::center_imgui_text(const std::string & text) {
+        // calc width so far.
+        int   cur_col            = ImGui::GetColumnIndex();
+        float total_width_so_far = 0.0f;
+        while (--cur_col >= 0) {
+                // get each column width, down to 0, break at -1
+                total_width_so_far += ImGui::GetColumnWidth(cur_col);
+        }
+
+        float width      = ImGui::GetContentRegionAvailWidth();
+        float text_width = ImGui::CalcTextSize(text.c_str()).x;
+
+        float indent = (width - text_width) * 0.5;
+
+        float min_indent = 0.0f;
+        if (std::fabs(indent - min_indent) <= 1e-6) {
+                indent = min_indent;
+        }
+
+        ImGui::SetCursorPosX(total_width_so_far + indent);
+        ImGui::Text(text.c_str());
+}
+
 /// <summary>
 /// This call usually includes ImGui code that is shown and rendered (repeatedly,
 /// on every frame rendered) when your plugin is selected in the plugin
@@ -86,39 +111,58 @@ void LogGoalReplayTime::onUnload() {
 void LogGoalReplayTime::RenderSettings() {
         // for imgui plugin window
 
-        // grab stats once, somehow
-
+        // PRETTY TABLES
         // output stats
+
         ImGui::TextUnformatted(
                 std::vformat("Last Game Number: {}", std::make_format_args(stats_data.game_num)).c_str());
         ImGui::TextUnformatted(std::vformat("Last Game GUID: {}", std::make_format_args(stats_data.game_guid)).c_str());
 
+        ImGui::BeginColumns("stats_columns", 4, ImGuiColumnsFlags_NoResize);
+        float width = ImGui::GetWindowContentRegionWidth();
+        ImGui::SetColumnWidth(0, width * 0.4);
+        ImGui::SetColumnWidth(1, width * 0.1);
+        ImGui::SetColumnWidth(2, width * 0.1);
+        ImGui::SetColumnWidth(3, width * 0.1);
+        ImGui::NextColumn();
+        center_imgui_text("Min");
+        ImGui::NextColumn();
+        center_imgui_text("Average");
+        ImGui::NextColumn();
+        center_imgui_text("Max");
+        ImGui::Separator();
+        ImGui::NextColumn();
         ImGui::TextUnformatted("Time (in milliseconds) spent after goal scored:");
-        ImGui::TextUnformatted(
-                std::vformat("    Min: {:6d} ", std::make_format_args(stats_data.min_post_goal)).c_str());
-        ImGui::TextUnformatted(
-                std::vformat("    Average: {:6d} ", std::make_format_args(stats_data.milliseconds_spent_post_goal))
-                        .c_str());
-
-        ImGui::TextUnformatted(
-                std::vformat("    Max: {:6d} ", std::make_format_args(stats_data.max_post_goal)).c_str());
+        ImGui::NextColumn();
+        center_imgui_text(std::vformat("{:6d}ms", std::make_format_args(stats_data.min_post_goal)).c_str());
+        ImGui::NextColumn();
+        center_imgui_text(
+                std::vformat("{:6d}ms", std::make_format_args(stats_data.milliseconds_spent_post_goal)).c_str());
+        ImGui::NextColumn();
+        center_imgui_text(std::vformat("{:6d}ms", std::make_format_args(stats_data.max_post_goal)).c_str());
+        ImGui::Separator();
+        ImGui::NextColumn();
         ImGui::TextUnformatted("Time (in milliseconds) spent in goal replay:");
-        ImGui::TextUnformatted(
-                std::vformat("    Min: {:6d} ", std::make_format_args(stats_data.min_goal_replay)).c_str());
-        ImGui::TextUnformatted(
-                std::vformat("    Average: {:6d} ", std::make_format_args(stats_data.milliseconds_spent_goal_replay))
-                        .c_str());
-
-        ImGui::TextUnformatted(
-                std::vformat("    Max: {:6d} ", std::make_format_args(stats_data.max_goal_replay)).c_str());
+        ImGui::NextColumn();
+        center_imgui_text(std::vformat("{:6d}ms", std::make_format_args(stats_data.min_goal_replay)).c_str());
+        ImGui::NextColumn();
+        center_imgui_text(
+                std::vformat("{:6d}ms", std::make_format_args(stats_data.milliseconds_spent_goal_replay)).c_str());
+        ImGui::NextColumn();
+        center_imgui_text(std::vformat("{:6d}ms", std::make_format_args(stats_data.max_goal_replay)).c_str());
+        ImGui::Separator();
+        ImGui::NextColumn();
         ImGui::TextUnformatted("Time (in milliseconds) spent in countdown:");
-        ImGui::TextUnformatted(
-                std::vformat("    Min: {:6d} ", std::make_format_args(stats_data.min_countdown)).c_str());
-        ImGui::TextUnformatted(
-                std::vformat("    Average: {:6d} ", std::make_format_args(stats_data.milliseconds_spent_countdown))
-                        .c_str());
-        ImGui::TextUnformatted(
-                std::vformat("    Max: {:6d} ", std::make_format_args(stats_data.max_countdown)).c_str());
+        ImGui::NextColumn();
+        center_imgui_text(std::vformat("{:6d}ms", std::make_format_args(stats_data.min_countdown)).c_str());
+        ImGui::NextColumn();
+        center_imgui_text(
+                std::vformat("{:6d}ms", std::make_format_args(stats_data.milliseconds_spent_countdown)).c_str());
+        ImGui::NextColumn();
+        center_imgui_text(std::vformat("{:6d}ms", std::make_format_args(stats_data.max_countdown)).c_str());
+        ImGui::NextColumn();
+        ImGui::Separator();
+        ImGui::EndColumns();
 }
 
 /// <summary>
@@ -156,7 +200,7 @@ void LogGoalReplayTime::init_logfile() {
                         "MillisecondsSpentCountdown"};
         } else {
                 csv::CSVFileInfo fi = csv::get_file_info(LOGBOOK_FILE_PATH.string());
-                LOG("fi info: ncols {}, nrows {}", fi.n_cols, fi.n_rows);
+                // DEBUG: LOG("fi info: ncols {}, nrows {}", fi.n_cols, fi.n_rows);
                 if (fi.n_rows > 1) {
                         csv::CSVReader logbook_reader {LOGBOOK_FILE_PATH.string()};
                         csv::CSVRow    row;

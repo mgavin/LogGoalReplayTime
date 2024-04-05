@@ -3,6 +3,7 @@
 #include <chrono>
 #include <fstream>
 #include "bakkesmod/imgui/imgui.h"
+#include "bakkesmod/imgui/imgui_internal.h"
 #include "bakkesmod/plugin/bakkesmodplugin.h"
 #include "bakkesmod/plugin/PluginSettingsWindow.h"
 #include "csv.hpp"
@@ -45,8 +46,8 @@ private:
 
         void init_logfile();
         void write_and_flush();
+        void center_imgui_text(const std::string &);
         void generate_stats();
-
         void HandlePostGoalScoredBegin();
         void HandlePostGoalScoredEnd();
         void HandleGoalReplayPlaybackBegin();
