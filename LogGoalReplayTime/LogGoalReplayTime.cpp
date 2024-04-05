@@ -284,7 +284,9 @@ void LogGoalReplayTime::write_and_flush() {
         }
         // clear everything out.
         memset(&current_data, 0, sizeof(data));
-        current_data.game_guid = "";
+        current_data.game_guid       = "";
+        current_data.did_player_skip = false;  // should be cleared out... but. uhhh extra handling for the numbers :\
+        current_data.did_team_skip   = false;
         did_post_goal = did_goal_replay = did_countdown = false;
         generate_stats();
 }
