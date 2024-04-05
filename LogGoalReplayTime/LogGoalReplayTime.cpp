@@ -32,13 +32,8 @@ void LogGoalReplayTime::onLoad() {
                 std::bind(&LogGoalReplayTime::HandleGoalReplayPlaybackBegin, this),
                 true);
         HookedEvents::AddHookedEvent(
-                "Function TAGame.PlayerController_TA.ReadyUp",
-                // IF THE PLAYER HITS "SKIP REPLAY"
-                std::bind(&LogGoalReplayTime::HandlePlayerReadyUp, this),
-                true);
-        HookedEvents::AddHookedEvent(
                 "Function TAGame.PRI_TA.ServerReadyUp",
-                // THE TEAM SKIPPED THE REPLAY, AKA THEY'RE "READY"!
+                // EVERYONE SKIPPED THE REPLAY, AKA THEY'RE "READY"!
                 std::bind(&LogGoalReplayTime::HandleServerReadyUp, this),
                 true);
         HookedEvents::AddHookedEvent(
@@ -191,10 +186,9 @@ void LogGoalReplayTime::init_logfile() {
                         "LoggedGameGUID",
                         "PlaylistID",
                         "PlaylistName",
+                        "DidEveryoneSkip",
                         "MillisecondsSpentPostGoal",
                         "MillisecondsSpentGoalReplay",
-                        "DidPlayerSkip",
-                        "DidTeamSkip",
                         "MillisecondsSpentCountdown",
                 };
         } else {
@@ -259,12 +253,8 @@ void LogGoalReplayTime::HandleGoalReplayPlaybackBegin() {
         t              = std::chrono::steady_clock::now();
 }
 
-void LogGoalReplayTime::HandlePlayerReadyUp() {
-        current_data.did_player_skip = true;
-}
-
 void LogGoalReplayTime::HandleServerReadyUp() {
-        current_data.did_team_skip = true;
+        current_data.did_everyone_skip = true;
 }
 
 void LogGoalReplayTime::HandleGoalReplayPlaybackEnd() {
@@ -310,16 +300,15 @@ void LogGoalReplayTime::write_and_flush() {
         std::ofstream logbook_file {LOGBOOK_FILE_PATH, std::ios::app};  // fuck. this should be checked.
         if (!logbook_file) {
                 LOG("CANNOT OPEN LOGBOOK FILE! THROWING AWAY DATA! CURRENT DATA:");
-                LOG("Game Number: {}\nGame GUID: {}\nPlaylist ID: {}\nPlaylist Name: {}\nMilliseconds Spent Post Goal: {}\nMilliseconds Spent Goal Replay: {}\nMilliseconds Spent In Countdown: {}\n Player Skipped: {}\n Team Skipped: {}\n",
+                LOG("Game Number: {}\nGame GUID: {}\nPlaylist ID: {}\nPlaylist Name: {}\nEveryone Skipped: {}\nMilliseconds Spent Post Goal: {}\nMilliseconds Spent Goal Replay: {}\nMilliseconds Spent In Countdown: {}",
                     current_data.game_num,
                     current_data.game_guid,
                     static_cast<int>(current_data.playlist_id),
                     current_data.playlist_name,
+                    current_data.did_everyone_skip,
                     current_data.milliseconds_spent_post_goal,
                     current_data.milliseconds_spent_goal_replay,
-                    current_data.milliseconds_spent_countdown,
-                    current_data.did_player_skip,
-                    current_data.did_team_skip);
+                    current_data.milliseconds_spent_countdown);
         } else {
                 csv::CSVWriter logbook_writer {logbook_file};
                 logbook_writer << std::vector<std::string> {
@@ -327,10 +316,9 @@ void LogGoalReplayTime::write_and_flush() {
                         current_data.game_guid,
                         std::to_string(static_cast<int>(current_data.playlist_id)),
                         current_data.playlist_name,
+                        std::to_string(current_data.did_everyone_skip),
                         std::to_string(current_data.milliseconds_spent_post_goal),
                         std::to_string(current_data.milliseconds_spent_goal_replay),
-                        std::to_string(current_data.did_player_skip),
-                        std::to_string(current_data.did_team_skip),
                         std::to_string(current_data.milliseconds_spent_countdown)};
         }
         // clear everything out.
@@ -352,7 +340,7 @@ void LogGoalReplayTime::generate_stats() {
         int         tmppostc = 0, tmpgoalc = 0, tmpcountc = 0;
         csv::CSVRow row;
         while (logbook_reader.read_row(row)) {
-                if (!row["DidTeamSkip"].get<bool>()) {
+                if (!row["DidEveryoneSkip"].get<bool>()) {
                         if (auto n = row["MillisecondsSpentPostGoal"].get<int>(); n != 0) {
                                 tmppost  += n;
                                 tmppostc += 1;
@@ -496,8 +484,7 @@ std::string LogGoalReplayTime::get_string_from_playlist_id(const PlaylistIds & i
 }
 
 void LogGoalReplayTime::reset_data(data & s) {
-        s.did_player_skip                = false;
-        s.did_team_skip                  = false;
+        s.did_everyone_skip              = false;
         s.game_guid                      = "";
         s.game_num                       = -1;
         s.milliseconds_spent_countdown   = -1;

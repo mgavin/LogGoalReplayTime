@@ -17,10 +17,9 @@ private:
                 std::string game_guid;
                 PlaylistIds playlist_id;
                 std::string playlist_name;
+                bool        did_everyone_skip;
                 int         milliseconds_spent_post_goal;
                 int         milliseconds_spent_goal_replay;
-                bool        did_player_skip;
-                bool        did_team_skip;
                 int         milliseconds_spent_countdown;
         };
 
