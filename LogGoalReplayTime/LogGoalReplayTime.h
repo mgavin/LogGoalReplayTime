@@ -6,6 +6,7 @@
 #include "bakkesmod/imgui/imgui_internal.h"
 #include "bakkesmod/plugin/bakkesmodplugin.h"
 #include "bakkesmod/plugin/PluginSettingsWindow.h"
+#include "bakkesmod/wrappers/MatchmakingWrapper.h"
 #include "csv.hpp"
 #include "HookedEvents.h"
 
@@ -14,6 +15,8 @@ private:
         struct data {
                 int         game_num;
                 std::string game_guid;
+                PlaylistIds playlist_id;
+                std::string playlist_name;
                 int         milliseconds_spent_post_goal;
                 int         milliseconds_spent_goal_replay;
                 bool        did_player_skip;
@@ -44,10 +47,13 @@ private:
         data  current_data;
         stats stats_data;
 
-        void init_logfile();
-        void write_and_flush();
-        void center_imgui_text(const std::string &);
-        void generate_stats();
+        void        init_logfile();
+        void        write_and_flush();
+        void        center_imgui_text(const std::string &);
+        void        generate_stats();
+        std::string get_string_from_playlist_id(const PlaylistIds & id);
+        void        reset_data(data & s);
+
         void HandlePostGoalScoredBegin();
         void HandlePostGoalScoredEnd();
         void HandleGoalReplayPlaybackBegin();

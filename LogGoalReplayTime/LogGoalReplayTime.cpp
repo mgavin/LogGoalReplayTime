@@ -62,12 +62,8 @@ void LogGoalReplayTime::onLoad() {
                 std::bind(&LogGoalReplayTime::HandleBackToMainMenu, this),
                 true);
 
-        memset(&current_data, 0, sizeof(data));
-        current_data.game_guid       = "";
-        current_data.did_player_skip = false;  // should be cleared out... but. uhhh extra handling for the numbers :/
-        current_data.did_team_skip   = false;
-        memset(&stats_data, 0, sizeof(data));
-        stats_data.game_guid = "";
+        reset_data(current_data);
+        reset_data(stats_data);
         generate_stats();
 }
 
@@ -91,7 +87,7 @@ void LogGoalReplayTime::center_imgui_text(const std::string & text) {
         float width      = ImGui::GetContentRegionAvailWidth();
         float text_width = ImGui::CalcTextSize(text.c_str()).x;
 
-        float indent = (width - text_width) * 0.5;
+        float indent = (width - text_width) * 0.5f;
 
         float min_indent = 0.0f;
         if (std::fabs(indent - min_indent) <= 1e-6) {
@@ -193,11 +189,14 @@ void LogGoalReplayTime::init_logfile() {
                 logbook_writer << std::vector {
                         "LoggedGame#",
                         "LoggedGameGUID",
+                        "PlaylistID",
+                        "PlaylistName",
                         "MillisecondsSpentPostGoal",
                         "MillisecondsSpentGoalReplay",
                         "DidPlayerSkip",
                         "DidTeamSkip",
-                        "MillisecondsSpentCountdown"};
+                        "MillisecondsSpentCountdown",
+                };
         } else {
                 csv::CSVFileInfo fi = csv::get_file_info(LOGBOOK_FILE_PATH.string());
                 // DEBUG: LOG("fi info: ncols {}, nrows {}", fi.n_cols, fi.n_rows);
@@ -236,6 +235,10 @@ void LogGoalReplayTime::HandlePostGoalScoredBegin() {
                                 current_data.game_guid  = game_guid;
                                 current_data.game_num  += 1;
                         }
+
+                        GameSettingPlaylistWrapper gspw = sw.GetPlaylist();
+                        current_data.playlist_id        = static_cast<PlaylistIds>(gspw.GetPlaylistId());
+                        current_data.playlist_name      = get_string_from_playlist_id(current_data.playlist_id);
                 }
 
                 t = std::chrono::steady_clock::now();
@@ -307,9 +310,11 @@ void LogGoalReplayTime::write_and_flush() {
         std::ofstream logbook_file {LOGBOOK_FILE_PATH, std::ios::app};  // fuck. this should be checked.
         if (!logbook_file) {
                 LOG("CANNOT OPEN LOGBOOK FILE! THROWING AWAY DATA! CURRENT DATA:");
-                LOG("Game Number: {}\nGame GUID: {}\nMilliseconds Spent Post Goal: {}\nMilliseconds Spent Goal Replay: {}\nMilliseconds Spent In Countdown: {}\n Player Skipped: {}\n Team Skipped: {}\n",
+                LOG("Game Number: {}\nGame GUID: {}\nPlaylist ID: {}\nPlaylist Name: {}\nMilliseconds Spent Post Goal: {}\nMilliseconds Spent Goal Replay: {}\nMilliseconds Spent In Countdown: {}\n Player Skipped: {}\n Team Skipped: {}\n",
                     current_data.game_num,
                     current_data.game_guid,
+                    static_cast<int>(current_data.playlist_id),
+                    current_data.playlist_name,
                     current_data.milliseconds_spent_post_goal,
                     current_data.milliseconds_spent_goal_replay,
                     current_data.milliseconds_spent_countdown,
@@ -320,6 +325,8 @@ void LogGoalReplayTime::write_and_flush() {
                 logbook_writer << std::vector<std::string> {
                         std::to_string(current_data.game_num),
                         current_data.game_guid,
+                        std::to_string(static_cast<int>(current_data.playlist_id)),
+                        current_data.playlist_name,
                         std::to_string(current_data.milliseconds_spent_post_goal),
                         std::to_string(current_data.milliseconds_spent_goal_replay),
                         std::to_string(current_data.did_player_skip),
@@ -327,10 +334,8 @@ void LogGoalReplayTime::write_and_flush() {
                         std::to_string(current_data.milliseconds_spent_countdown)};
         }
         // clear everything out.
-        memset(&current_data, 0, sizeof(data));
-        current_data.game_guid       = "";
-        current_data.did_player_skip = false;  // should be cleared out... but. uhhh extra handling for the numbers :/
-        current_data.did_team_skip   = false;
+        reset_data(current_data);
+        // reset flags
         did_post_goal = did_goal_replay = did_countdown = false;
         generate_stats();
 }
@@ -380,6 +385,126 @@ void LogGoalReplayTime::generate_stats() {
         stats_data.milliseconds_spent_countdown   = static_cast<int>(tmpcount / static_cast<ull>(tmpcountc));
         stats_data.game_num                       = row["LoggedGame#"].get<int>();
         stats_data.game_guid                      = row["LoggedGameGUID"].get<std::string>();
+}
+
+/// <summary>
+/// Gets a string representation of the playlist from the ID.
+/// </summary>
+/// <param name="id">the playlist ID returned from bakkesmod</param>
+/// <returns></returns>
+std::string LogGoalReplayTime::get_string_from_playlist_id(const PlaylistIds & id) {
+        switch (id) {
+                case PlaylistIds::Unknown:
+                        return "Unknown";
+                case PlaylistIds::Casual:
+                        return "Casual";
+                case PlaylistIds::Duel:
+                        return "Duel";
+                case PlaylistIds::Doubles:
+                        return "Doubles";
+                case PlaylistIds::Standard:
+                        return "Standard";
+                case PlaylistIds::Chaos:
+                        return "Chaos";
+                case PlaylistIds::PrivateMatch:
+                        return "Private Match";
+                case PlaylistIds::Season:
+                        return "Season";
+                case PlaylistIds::OfflineSplitscreen:
+                        return "Offline Splitscreen";
+                case PlaylistIds::Training:
+                        return "Training";
+                case PlaylistIds::RankedSoloDuel:
+                        return "Ranked Solo Duel";
+                case PlaylistIds::RankedTeamDoubles:
+                        return "Ranked Team Doubles";
+                case PlaylistIds::RankedStandard:
+                        return "Ranked Standard";
+                case PlaylistIds::SnowDayPromotion:
+                        return "SnowDay Promotion";
+                case PlaylistIds::Experimental:
+                        return "Experimental";
+                case PlaylistIds::BasketballDoubles:
+                        return "Basketball Doubles";
+                case PlaylistIds::Rumble:
+                        return "Rumble";
+                case PlaylistIds::Workshop:
+                        return "Workshop";
+                case PlaylistIds::UGCTrainingEditor:
+                        return "UGC Training Editor";
+                case PlaylistIds::UGCTraining:
+                        return "UGC Training";
+                case PlaylistIds::Tournament:
+                        return "Tournament";
+                case PlaylistIds::Breakout:
+                        return "Breakout";
+                case PlaylistIds::TenthAnniversary:
+                        return "Tenth Anniversary";
+                case PlaylistIds::FaceIt:
+                        return "Face It";
+                case PlaylistIds::RankedBasketballDoubles:
+                        return "Ranked Basketball Doubles";
+                case PlaylistIds::RankedRumble:
+                        return "Ranked Rumble";
+                case PlaylistIds::RankedBreakout:
+                        return "Ranked Breakout";
+                case PlaylistIds::RankedSnowDay:
+                        return "Ranked SnowDay";
+                case PlaylistIds::HauntedBall:
+                        return "Haunted Ball";
+                case PlaylistIds::BeachBall:
+                        return "Beach Ball";
+                case PlaylistIds::Rugby:
+                        return "Rugby";
+                case PlaylistIds::AutoTournament:
+                        return "Auto Tournament";
+                case PlaylistIds::RocketLabs:
+                        return "Rocket Labs";
+                case PlaylistIds::RumShot:
+                        return "Rum Shot";
+                case PlaylistIds::GodBall:
+                        return "God Ball";
+                case PlaylistIds::CoopVsAI:
+                        return "Coop Vs AI";
+                case PlaylistIds::BoomerBall:
+                        return "Boomer Ball";
+                case PlaylistIds::GodBallDoubles:
+                        return "God Ball Doubles";
+                case PlaylistIds::SpecialSnowDay:
+                        return "Special SnowDay";
+                case PlaylistIds::Football:
+                        return "Football";
+                case PlaylistIds::Cubic:
+                        return "Cubic";
+                case PlaylistIds::TacticalRumble:
+                        return "Tactical Rumble";
+                case PlaylistIds::SpringLoaded:
+                        return "Spring Loaded";
+                case PlaylistIds::SpeedDemon:
+                        return "Speed Demon";
+                case PlaylistIds::RumbleBM:
+                        return "Rumble BM";
+                case PlaylistIds::Knockout:
+                        return "Knockout";
+                case PlaylistIds::Thirdwheel:
+                        return "Thirdwheel";
+                case PlaylistIds::MagnusFutball:
+                        return "Magnus Futball";
+        }
+
+        return std::string();
+}
+
+void LogGoalReplayTime::reset_data(data & s) {
+        s.did_player_skip                = false;
+        s.did_team_skip                  = false;
+        s.game_guid                      = "";
+        s.game_num                       = -1;
+        s.milliseconds_spent_countdown   = -1;
+        s.milliseconds_spent_goal_replay = -1;
+        s.milliseconds_spent_post_goal   = -1;
+        s.playlist_id                    = PlaylistIds::Unknown;
+        s.playlist_name                  = "";
 }
 
 /*
