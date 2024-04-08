@@ -290,7 +290,7 @@ void LogGoalReplayTime::HandleCountdownEnd() {
 }
 
 void LogGoalReplayTime::HandleBackToMainMenu() {
-        if ((in_post_goal_scored || in_goal_replay || in_countdown) && came_from_online_game) {
+        if ((did_post_goal || did_goal_replay || did_countdown) && came_from_online_game) {
                 // somehow got kicked back to the main manu without going through a countdown
                 // maybe afk?, or the goal and replay was the last one of the game
                 write_and_flush();
@@ -354,7 +354,7 @@ void LogGoalReplayTime::generate_stats() {
         csv::CSVRow row;
         while (logbook_reader.read_row(row)) {
                 if (!row["DidEveryoneSkip"].get<bool>()) {
-                        if (auto n = row["MillisecondsSpentPostGoal"].get<int>(); n != 0) {
+                        if (auto n = row["MillisecondsSpentPostGoal"].get<int>(); n > 0) {
                                 tmppost  += n;
                                 tmppostc += 1;
                                 stats_data.min_post_goal =
@@ -362,7 +362,7 @@ void LogGoalReplayTime::generate_stats() {
                                 stats_data.max_post_goal =
                                         (stats_data.max_post_goal == 0) ? n : std::max(stats_data.max_post_goal, n);
                         }
-                        if (auto n = row["MillisecondsSpentGoalReplay"].get<int>(); n != 0) {
+                        if (auto n = row["MillisecondsSpentGoalReplay"].get<int>(); n > 0) {
                                 tmpgoal  += n;
                                 tmpgoalc += 1;
                                 stats_data.min_goal_replay =
@@ -370,7 +370,7 @@ void LogGoalReplayTime::generate_stats() {
                                 stats_data.max_goal_replay =
                                         (stats_data.max_goal_replay == 0) ? n : std::max(stats_data.max_goal_replay, n);
                         }
-                        if (auto n = row["MillisecondsSpentCountdown"].get<int>(); n != 0) {
+                        if (auto n = row["MillisecondsSpentCountdown"].get<int>(); n > 0) {
                                 tmpcount  += n;
                                 tmpcountc += 1;
                                 stats_data.min_countdown =
