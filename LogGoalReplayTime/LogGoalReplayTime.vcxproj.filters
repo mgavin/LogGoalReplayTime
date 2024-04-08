@@ -22,6 +22,9 @@
     <Filter Include="CSV">
       <UniqueIdentifier>{aa8f27d0-11b0-427b-b468-8e82dbf258f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="IMPLOT">
+      <UniqueIdentifier>{6068416f-4634-4e99-904a-c8eaa84456d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vs_property_pages\BakkesMod.props" />
@@ -89,6 +92,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imguivariouscontrols.cpp">
       <Filter>IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\implot\implot.cpp">
+      <Filter>IMPLOT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\implot\implot_demo.cpp">
+      <Filter>IMPLOT</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\AppData\Roaming\bakkesmod\bakkesmod\bakkesmodsdk\include\bakkesmod\imgui\imstb_truetype.h">
       <Filter>IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\implot\implot.h">
+      <Filter>IMPLOT</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

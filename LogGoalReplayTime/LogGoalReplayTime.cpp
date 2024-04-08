@@ -102,9 +102,11 @@ void LogGoalReplayTime::center_imgui_text(const std::string & text) {
 void LogGoalReplayTime::RenderSettings() {
         // for imgui plugin window
 
+        // maybe add an on/off option,
+        // maybe add "toastme" bools for pulling up notifications with how long things took
+
         // PRETTY TABLES
         // output stats
-
         ImGui::TextUnformatted(
                 std::vformat("Last Game Number: {}", std::make_format_args(stats_data.game_num)).c_str());
         ImGui::TextUnformatted(std::vformat("Last Game GUID: {}", std::make_format_args(stats_data.game_guid)).c_str());
@@ -210,8 +212,9 @@ void LogGoalReplayTime::HandlePostGoalScoredBegin() {
 
         if (gameWrapper->IsInOnlineGame()) {
                 // if you're in an online game
-                // why not freeplay? idk...
-                csv::CSVFileInfo fi = csv::get_file_info(LOGBOOK_FILE_PATH.string());
+                // ...because it seems the most "appropriate" place to track this data.
+                came_from_online_game = true;
+                csv::CSVFileInfo fi   = csv::get_file_info(LOGBOOK_FILE_PATH.string());
                 if (fi.n_rows > 1) {  // COUNTS THE HEADER ROW
                         csv::CSVReader logbook_reader {LOGBOOK_FILE_PATH.string()};
                         /* skip to end :rolling_eyes: */
@@ -287,17 +290,16 @@ void LogGoalReplayTime::HandleCountdownEnd() {
 }
 
 void LogGoalReplayTime::HandleBackToMainMenu() {
-        if (in_post_goal_scored || in_goal_replay || in_countdown) {
+        if ((in_post_goal_scored || in_goal_replay || in_countdown) && came_from_online_game) {
                 // somehow got kicked back to the main manu without going through a countdown
                 // maybe afk?, or the goal and replay was the last one of the game
                 write_and_flush();
-                in_post_goal_scored = in_goal_replay = in_countdown = false;
         }
 }
 
 void LogGoalReplayTime::write_and_flush() {
         // write everything out
-        std::ofstream logbook_file {LOGBOOK_FILE_PATH, std::ios::app};  // fuck. this should be checked.
+        std::ofstream logbook_file {LOGBOOK_FILE_PATH, std::ios::app};
         if (!logbook_file) {
                 LOG("CANNOT OPEN LOGBOOK FILE! THROWING AWAY DATA! CURRENT DATA:");
                 LOG("Game Number: {}\nGame GUID: {}\nPlaylist ID: {}\nPlaylist Name: {}\nEveryone Skipped: {}\nMilliseconds Spent Post Goal: {}\nMilliseconds Spent Goal Replay: {}\nMilliseconds Spent In Countdown: {}",
@@ -310,21 +312,32 @@ void LogGoalReplayTime::write_and_flush() {
                     current_data.milliseconds_spent_goal_replay,
                     current_data.milliseconds_spent_countdown);
         } else {
-                csv::CSVWriter logbook_writer {logbook_file};
-                logbook_writer << std::vector<std::string> {
-                        std::to_string(current_data.game_num),
-                        current_data.game_guid,
-                        std::to_string(static_cast<int>(current_data.playlist_id)),
-                        current_data.playlist_name,
-                        std::to_string(current_data.did_everyone_skip),
-                        std::to_string(current_data.milliseconds_spent_post_goal),
-                        std::to_string(current_data.milliseconds_spent_goal_replay),
-                        std::to_string(current_data.milliseconds_spent_countdown)};
+                if (current_data.game_num == -1) {
+                        LOG("THERE WAS AN ERROR RECORDING THE DATA!");
+                        LOG("Game Number: {}\nGame GUID: {}\nPlaylist ID: {}\nPlaylist Name: {}\nEveryone Skipped: {}\nMilliseconds Spent Post Goal: {}\nMilliseconds Spent Goal Replay: {}\nMilliseconds Spent In Countdown: {}",
+                            current_data.game_num,
+                            current_data.game_guid,
+                            static_cast<int>(current_data.playlist_id),
+                            current_data.playlist_name,
+                            current_data.did_everyone_skip,
+                            current_data.milliseconds_spent_post_goal,
+                            current_data.milliseconds_spent_goal_replay,
+                            current_data.milliseconds_spent_countdown);
+                } else {
+                        csv::CSVWriter logbook_writer {logbook_file};
+                        logbook_writer << std::vector<std::string> {
+                                std::to_string(current_data.game_num),
+                                current_data.game_guid,
+                                std::to_string(static_cast<int>(current_data.playlist_id)),
+                                current_data.playlist_name,
+                                std::to_string(current_data.did_everyone_skip),
+                                std::to_string(current_data.milliseconds_spent_post_goal),
+                                std::to_string(current_data.milliseconds_spent_goal_replay),
+                                std::to_string(current_data.milliseconds_spent_countdown)};
+                }
         }
         // clear everything out.
         reset_data(current_data);
-        // reset flags
-        did_post_goal = did_goal_replay = did_countdown = false;
         generate_stats();
 }
 
@@ -492,6 +505,10 @@ void LogGoalReplayTime::reset_data(data & s) {
         s.milliseconds_spent_post_goal   = -1;
         s.playlist_id                    = PlaylistIds::Unknown;
         s.playlist_name                  = "";
+
+        // reset flags
+        did_post_goal = did_goal_replay = did_countdown = false;
+        came_from_online_game                           = false;
 }
 
 /*

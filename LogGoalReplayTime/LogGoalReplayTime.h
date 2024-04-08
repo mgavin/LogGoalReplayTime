@@ -34,12 +34,13 @@ private:
 
         const std::filesystem::path LOGBOOK_FILE_PATH = gameWrapper->GetDataFolder().append("LogGoalReplayTime.csv");
 
-        bool in_post_goal_scored = false;
-        bool in_goal_replay      = false;
-        bool in_countdown        = false;
-        bool did_post_goal       = false;
-        bool did_goal_replay     = false;
-        bool did_countdown       = false;
+        bool in_post_goal_scored   = false;
+        bool in_goal_replay        = false;
+        bool in_countdown          = false;
+        bool did_post_goal         = false;
+        bool did_goal_replay       = false;
+        bool did_countdown         = false;
+        bool came_from_online_game = false;
 
         std::chrono::time_point<std::chrono::steady_clock> t;
 

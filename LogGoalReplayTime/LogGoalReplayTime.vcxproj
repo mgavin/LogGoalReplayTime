@@ -74,6 +74,8 @@
     <ClCompile Include="..\csv-parser\include\internal\csv_row_json.cpp" />
     <ClCompile Include="..\csv-parser\include\internal\csv_stat.cpp" />
     <ClCompile Include="..\csv-parser\include\internal\csv_utility.cpp" />
+    <ClCompile Include="..\implot\implot.cpp" />
+    <ClCompile Include="..\implot\implot_demo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(RootNamespace).h" />
@@ -101,6 +103,7 @@
     <ClInclude Include="..\csv-parser\include\internal\csv_utility.hpp" />
     <ClInclude Include="..\csv-parser\include\internal\csv_writer.hpp" />
     <ClInclude Include="..\csv-parser\include\internal\data_type.h" />
+    <ClInclude Include="..\implot\implot.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="HookedEvents.h" />
   </ItemGroup>

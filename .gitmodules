@@ -1,0 +1,6 @@
+[submodule "implot"]
+	path = implot
+	url = git@github.com:epezent/implot
+[submodule "csv-parser"]
+	path = csv-parser
+	url = https://github.com/vincentlaucsb/csv-parser/
