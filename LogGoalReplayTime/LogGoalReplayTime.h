@@ -9,9 +9,16 @@
 #include "bakkesmod/wrappers/MatchmakingWrapper.h"
 #include "csv.hpp"
 #include "HookedEvents.h"
+#include "implot.h"
+
+struct graph_data {
+        int              pos = 0;
+        std::vector<int> data;
+};
 
 class LogGoalReplayTime : public BakkesMod::Plugin::BakkesModPlugin, public BakkesMod::Plugin::PluginSettingsWindow {
 private:
+        // structured data for general statistics
         struct data {
                 int         game_num;
                 std::string game_guid;
@@ -32,8 +39,16 @@ private:
                 int min_countdown;
         };
 
+        std::chrono::time_point<std::chrono::steady_clock> t;
+
+        data       current_data;
+        stats      stats_data;
+        graph_data post_time, goal_time, countdown_time;
+        float *    post_time_arr, goal_time_arr, countdown_time_arr;
+
         const std::filesystem::path LOGBOOK_FILE_PATH = gameWrapper->GetDataFolder().append("LogGoalReplayTime.csv");
 
+        // flags for proper situation handling
         bool in_post_goal_scored   = false;
         bool in_goal_replay        = false;
         bool in_countdown          = false;
@@ -42,11 +57,7 @@ private:
         bool did_countdown         = false;
         bool came_from_online_game = false;
 
-        std::chrono::time_point<std::chrono::steady_clock> t;
-
-        data  current_data;
-        stats stats_data;
-
+        // general functions for doing stuff
         void        init_logfile();
         void        write_and_flush();
         void        center_imgui_text(const std::string &);
@@ -54,10 +65,10 @@ private:
         std::string get_string_from_playlist_id(const PlaylistIds & id);
         void        reset_data(data & s);
 
+        // handle functions for hooks
         void HandlePostGoalScoredBegin();
         void HandlePostGoalScoredEnd();
         void HandleGoalReplayPlaybackBegin();
-        void HandlePlayerReadyUp();
         void HandleServerReadyUp();
         void HandleGoalReplayPlaybackEnd();
         void HandleCountdownBegin();

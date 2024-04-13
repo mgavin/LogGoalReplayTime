@@ -93,6 +93,17 @@ void LogGoalReplayTime::center_imgui_text(const std::string & text) {
         ImGui::Text(text.c_str());
 }
 
+static ImVec2 helper(void * data, int idx) {
+        ImVec2       v;
+        graph_data * dat = reinterpret_cast<graph_data *>(data);
+        try {
+                v = ImVec2((idx + 1) * 1.0f + (0.25 * dat->pos), dat->data.at(idx));
+        } catch (const std::exception & ex) {
+                // THIS WAS BECAUSE OFFSET = AN INDEX SOMEHOW, LOL, AND NOT, YKNOW, AN X-OFFSET
+                LOG("EXCEPTION: WHAT? {}!!! IDX: {}", ex.what(), idx);
+        }
+        return v;
+}
 /// <summary>
 /// This call usually includes ImGui code that is shown and rendered (repeatedly,
 /// on every frame rendered) when your plugin is selected in the plugin
@@ -156,6 +167,36 @@ void LogGoalReplayTime::RenderSettings() {
         ImGui::NextColumn();
         ImGui::Separator();
         ImGui::EndColumns();
+
+        /// GRAPHS!@!!!!
+        // ADD A COLLAPSABLE HEADER
+        // THEN GRAPHS! WITH SLIDERS FOR BUCKETS!@
+        if (ImGui::CollapsingHeader("Data")) {
+                ImPlot::SetNextPlotLimits(-10.0f, 10.0f, 0.0f, 14000.0f, ImGuiCond_FirstUseEver);
+                if (ImPlot::BeginPlot("A bar graph!")) {
+                        // ImPlot::PlotBars("abc", post_time_arr, std::min(5, static_cast<int>(post_time.size())), 0.2f,
+                        // -0.2f);
+                        ImPlot::PlotBars(
+                                "post goal time",
+                                helper,
+                                reinterpret_cast<void *>(&post_time),
+                                std::min(5, std::max(0, static_cast<int>(post_time.data.size()))),
+                                0.25f);
+                        ImPlot::PlotBars(
+                                "goal replay time",
+                                helper,
+                                reinterpret_cast<void *>(&goal_time),
+                                std::min(5, std::max(0, static_cast<int>(goal_time.data.size()))),
+                                0.25f);
+                        ImPlot::PlotBars(
+                                "countdown time",
+                                helper,
+                                reinterpret_cast<void *>(&countdown_time),
+                                std::min(5, std::max(0, static_cast<int>(countdown_time.data.size()))),
+                                0.25f);
+                        ImPlot::EndPlot();
+                }
+        }
 }
 
 /// <summary>
@@ -342,6 +383,10 @@ void LogGoalReplayTime::write_and_flush() {
 }
 
 void LogGoalReplayTime::generate_stats() {
+        // FREE MEMORY
+        // delete[] post_time_arr, goal_time_arr, countdown_time_arr;
+        post_time.data.clear(), goal_time.data.clear(), countdown_time.data.clear();
+
         csv::CSVFileInfo fi = csv::get_file_info(LOGBOOK_FILE_PATH.string());
         if (fi.n_rows < 2) {
                 return;
@@ -361,6 +406,7 @@ void LogGoalReplayTime::generate_stats() {
                                         (stats_data.min_post_goal == 0) ? n : std::min(stats_data.min_post_goal, n);
                                 stats_data.max_post_goal =
                                         (stats_data.max_post_goal == 0) ? n : std::max(stats_data.max_post_goal, n);
+                                post_time.data.push_back(n);
                         }
                         if (auto n = row["MillisecondsSpentGoalReplay"].get<int>(); n > 0) {
                                 tmpgoal  += n;
@@ -369,6 +415,7 @@ void LogGoalReplayTime::generate_stats() {
                                         (stats_data.min_goal_replay == 0) ? n : std::min(stats_data.min_goal_replay, n);
                                 stats_data.max_goal_replay =
                                         (stats_data.max_goal_replay == 0) ? n : std::max(stats_data.max_goal_replay, n);
+                                goal_time.data.push_back(n);
                         }
                         if (auto n = row["MillisecondsSpentCountdown"].get<int>(); n > 0) {
                                 tmpcount  += n;
@@ -377,6 +424,7 @@ void LogGoalReplayTime::generate_stats() {
                                         (stats_data.min_countdown == 0) ? n : std::min(stats_data.min_countdown, n);
                                 stats_data.max_countdown =
                                         (stats_data.max_countdown == 0) ? n : std::max(stats_data.max_countdown, n);
+                                countdown_time.data.push_back(n);
                         }
                 }
         }
@@ -386,6 +434,15 @@ void LogGoalReplayTime::generate_stats() {
         stats_data.milliseconds_spent_countdown   = static_cast<int>(tmpcount / static_cast<ull>(tmpcountc));
         stats_data.game_num                       = row["LoggedGame#"].get<int>();
         stats_data.game_guid                      = row["LoggedGameGUID"].get<std::string>();
+
+        // BAR GRAPH BUCKETS!
+        // post_time_arr = new float[post_time.data.size()];
+        // std::transform(begin(post_time.data), end(post_time.data), post_time_arr, [](const int & elem) -> float {
+        //        return static_cast<float>(elem);
+        //});
+        countdown_time.pos = 1;
+        goal_time.pos      = 0;
+        post_time.pos      = -1;
 }
 
 /// <summary>
